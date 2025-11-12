@@ -1,0 +1,285 @@
+{
+  "meta": {
+    "version": 1,
+    "type": "gliffy"
+  },
+  "content": {
+    "objects": [
+      {
+        "id": 1,
+        "type": "shape",
+        "text": "App Shell",
+        "x": 100,
+        "y": 80,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 2,
+        "type": "shape",
+        "text": "Pilet 1",
+        "x": 100,
+        "y": 160,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "text": "Pilet 2",
+        "x": 100,
+        "y": 240,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 4,
+        "type": "shape",
+        "text": "Pilet N",
+        "x": 100,
+        "y": 320,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 5,
+        "type": "shape",
+        "text": "Service Worker Cache",
+        "x": 100,
+        "y": 400,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 6,
+        "type": "shape",
+        "text": "Front Door\n(Global Entry Point)",
+        "x": 400,
+        "y": 80,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 7,
+        "type": "shape",
+        "text": "Web Application Firewall",
+        "x": 400,
+        "y": 180,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 8,
+        "type": "shape",
+        "text": "Routing Rules",
+        "x": 400,
+        "y": 280,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 9,
+        "type": "shape",
+        "text": "App Shell\nStatic Web App",
+        "x": 700,
+        "y": 120,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 10,
+        "type": "shape",
+        "text": "Feed Service\nStatic Web App",
+        "x": 700,
+        "y": 260,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 11,
+        "type": "shape",
+        "text": "Pilet Storage\nContainer 1",
+        "x": 1000,
+        "y": 120,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 12,
+        "type": "shape",
+        "text": "Pilet Storage\nContainer 2",
+        "x": 1000,
+        "y": 220,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 13,
+        "type": "shape",
+        "text": "CDN Endpoint",
+        "x": 1000,
+        "y": 320,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 14,
+        "type": "shape",
+        "text": "API Gateway",
+        "x": 1300,
+        "y": 120,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 15,
+        "type": "shape",
+        "text": "Auth Service",
+        "x": 1300,
+        "y": 220,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 16,
+        "type": "shape",
+        "text": "Feed Service API",
+        "x": 1300,
+        "y": 320,
+        "width": 140,
+        "height": 60
+      },
+      {
+        "id": 100,
+        "type": "line",
+        "start": 1,
+        "end": 6,
+        "text": "Initial Load"
+      },
+      {
+        "id": 101,
+        "type": "line",
+        "start": 6,
+        "end": 7
+      },
+      {
+        "id": 102,
+        "type": "line",
+        "start": 7,
+        "end": 8
+      },
+      {
+        "id": 103,
+        "type": "line",
+        "start": 8,
+        "end": 9,
+        "text": "Route /"
+      },
+      {
+        "id": 104,
+        "type": "line",
+        "start": 8,
+        "end": 16,
+        "text": "Route /api/feed"
+      },
+      {
+        "id": 105,
+        "type": "line",
+        "start": 8,
+        "end": 14,
+        "text": "Route /api/*"
+      },
+      {
+        "id": 106,
+        "type": "line",
+        "start": 1,
+        "end": 16,
+        "text": "Fetch Pilet Registry"
+      },
+      {
+        "id": 107,
+        "type": "line",
+        "start": 16,
+        "end": 1,
+        "text": "Return Pilet Metadata"
+      },
+      {
+        "id": 108,
+        "type": "line",
+        "start": 1,
+        "end": 13,
+        "text": "Load Pilets"
+      },
+      {
+        "id": 109,
+        "type": "line",
+        "start": 13,
+        "end": 11
+      },
+      {
+        "id": 110,
+        "type": "line",
+        "start": 13,
+        "end": 12
+      },
+      {
+        "id": 111,
+        "type": "line",
+        "start": 2,
+        "end": 13,
+        "text": "Lazy Load",
+        "style": "dashed"
+      },
+      {
+        "id": 112,
+        "type": "line",
+        "start": 3,
+        "end": 13,
+        "text": "Lazy Load",
+        "style": "dashed"
+      },
+      {
+        "id": 113,
+        "type": "line",
+        "start": 4,
+        "end": 13,
+        "text": "Lazy Load",
+        "style": "dashed"
+      },
+      {
+        "id": 114,
+        "type": "line",
+        "start": 5,
+        "end": 1,
+        "text": "Offline Support",
+        "style": "dashed"
+      },
+      {
+        "id": 115,
+        "type": "line",
+        "start": 5,
+        "end": 2,
+        "text": "Cached Pilets",
+        "style": "dashed"
+      },
+      {
+        "id": 116,
+        "type": "line",
+        "start": 14,
+        "end": 15
+      },
+      {
+        "id": 117,
+        "type": "line",
+        "start": 16,
+        "end": 11
+      },
+      {
+        "id": 118,
+        "type": "line",
+        "start": 16,
+        "end": 12
+      }
+    ]
+  }
+}
