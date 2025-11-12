@@ -1,0 +1,388 @@
+h1. Piral Plugin Architecture
+
+{toc}
+
+h2. 1. 1. High-Level System Architecture
+{mermaid}
+graph TB
+                subgraph "Client Layer"
+                    Browser[Web Browser]
+                    Mobile[Mobile App]
+                    Desktop[Desktop PWA]
+                end
+                
+                subgraph "Azure Front Door"
+                    FD[Front Door
+Global Load Balancer]
+                    WAF[Web Application
+Firewall]
+                    Cache[Edge Cache]
+                end
+                
+                subgraph "Application Layer"
+                    Shell[Piral App Shell
+Static Web App]
+                    Feed[Feed Service
+Functions]
+                    Assets[Pilet Assets
+Blob Storage]
+                end
+                
+                subgraph "Services Layer"
+                    Auth[Authentication
+Azure AD B2C]
+                    API[API Management]
+                    Data[Data Services]
+                end
+                
+                Browser --> FD
+                Mobile --> FD
+                Desktop --> FD
+                
+                FD --> WAF
+                WAF --> Cache
+                Cache --> Shell
+                
+                Shell --> Feed
+                Shell --> Assets
+                Shell --> Auth
+                Shell --> API
+                
+                Feed --> Assets
+                API --> Data
+{mermaid}
+
+h2. 2. 2. Pilet Lifecycle and Loading Strategy
+{mermaid}
+sequenceDiagram
+                participant User
+                participant Browser
+                participant Shell
+                participant SW as Service Worker
+                participant Feed as Feed Service
+                participant CDN
+                participant Storage as Blob Storage
+                
+                User->>Browser: Navigate to App
+                Browser->>Shell: Load App Shell
+                Shell->>Shell: Initialize Core
+                
+                Shell->>SW: Check Cache
+                SW-->>Shell: Cached Pilet List
+                
+                Shell->>Feed: Request Pilet Registry
+                Feed->>Feed: Check User Permissions
+                Feed->>Feed: Filter Applicable Pilets
+                Feed-->>Shell: Return Pilet Metadata
+                
+                Shell->>Shell: Determine Load Priority
+                
+                loop For Each Priority Group
+                    Shell->>CDN: Request Pilet Bundle
+                    CDN->>Storage: Fetch if not cached
+                    Storage-->>CDN: Pilet Bundle
+                    CDN-->>Shell: Deliver Pilet
+                    Shell->>Shell: Initialize Pilet
+                    Shell->>Browser: Update UI
+                end
+                
+                Shell->>SW: Cache Pilets
+                SW->>SW: Store for Offline
+{mermaid}
+
+h2. 3. 3. Deployment Pipeline Architecture
+{mermaid}
+graph LR
+                subgraph "Development"
+                    Dev[Developer]
+                    IDE[VS Code]
+                    Local[Local Piral CLI]
+                end
+                
+                subgraph "Source Control"
+                    Git[Git Repository]
+                    PR[Pull Request]
+                    Review[Code Review]
+                end
+                
+                subgraph "CI/CD Pipeline"
+                    Build[Build Stage]
+                    Test[Test Stage]
+                    Security[Security Scan]
+                    Package[Package Stage]
+                end
+                
+                subgraph "Deployment Stages"
+                    DevEnv[Development
+Environment]
+                    Staging[Staging
+Environment]
+                    Canary[Canary
+Deployment]
+                    Prod[Production]
+                end
+                
+                subgraph "Azure Infrastructure"
+                    Registry[Container Registry]
+                    Storage[Blob Storage]
+                    FeedSvc[Feed Service]
+                    Monitor[Application Insights]
+                end
+                
+                Dev --> IDE
+                IDE --> Local
+                Local --> Git
+                Git --> PR
+                PR --> Review
+                Review --> Build
+                
+                Build --> Test
+                Test --> Security
+                Security --> Package
+                
+                Package --> Registry
+                Registry --> DevEnv
+                DevEnv -->|Auto| Staging
+                Staging -->|Manual| Canary
+                Canary -->|Progressive| Prod
+                
+                Package --> Storage
+                Storage --> FeedSvc
+                
+                DevEnv --> Monitor
+                Staging --> Monitor
+                Canary --> Monitor
+                Prod --> Monitor
+{mermaid}
+
+h2. 4. 4. Security Architecture
+{mermaid}
+graph TB
+                subgraph "Security Perimeter"
+                    Internet[Internet Traffic]
+                    DDos[DDoS Protection]
+                    FD[Azure Front Door]
+                    WAF[Web Application Firewall]
+                end
+                
+                subgraph "Authentication Layer"
+                    B2C[Azure AD B2C]
+                    MFA[Multi-Factor Auth]
+                    SSO[Single Sign-On]
+                    Tokens[Token Service]
+                end
+                
+                subgraph "Application Security"
+                    CSP[Content Security Policy]
+                    CORS[CORS Policy]
+                    Sandbox[Pilet Sandbox]
+                    Validate[Input Validation]
+                end
+                
+                subgraph "Data Security"
+                    Encrypt[Encryption at Rest]
+                    TLS[TLS in Transit]
+                    Keys[Key Vault]
+                    RBAC[Role-Based Access]
+                end
+                
+                Internet --> DDos
+                DDos --> FD
+                FD --> WAF
+                WAF --> B2C
+                
+                B2C --> MFA
+                B2C --> SSO
+                SSO --> Tokens
+                
+                Tokens --> CSP
+                CSP --> CORS
+                CORS --> Sandbox
+                Sandbox --> Validate
+                
+                Validate --> Encrypt
+                Validate --> TLS
+                Keys --> Encrypt
+                Keys --> TLS
+                RBAC --> Encrypt
+{mermaid}
+
+h2. 5. 5. Data Flow and Communication Patterns
+{mermaid}
+graph TB
+                subgraph "Pilet Communication"
+                    P1[Pilet 1
+Customer Mgmt]
+                    P2[Pilet 2
+Order Processing]
+                    P3[Pilet 3
+Analytics]
+                    Bus[Event Bus]
+                    State[Shared State]
+                end
+                
+                subgraph "API Gateway"
+                    Gateway[API Management]
+                    RateLimit[Rate Limiting]
+                    Transform[Transform]
+                    Route[Routing]
+                end
+                
+                subgraph "Backend Services"
+                    Customer[Customer Service]
+                    Order[Order Service]
+                    Analytics[Analytics Service]
+                    Cache[Redis Cache]
+                end
+                
+                subgraph "Data Layer"
+                    SQL[Azure SQL]
+                    Cosmos[Cosmos DB]
+                    Blob[Blob Storage]
+                    Search[Cognitive Search]
+                end
+                
+                P1 -.->|Publish Event| Bus
+                P2 -.->|Subscribe| Bus
+                P3 -.->|Subscribe| Bus
+                
+                P1 --> State
+                P2 --> State
+                P3 --> State
+                
+                P1 --> Gateway
+                P2 --> Gateway
+                P3 --> Gateway
+                
+                Gateway --> RateLimit
+                RateLimit --> Transform
+                Transform --> Route
+                
+                Route --> Customer
+                Route --> Order
+                Route --> Analytics
+                
+                Customer --> Cache
+                Order --> Cache
+                Analytics --> Cache
+                
+                Customer --> SQL
+                Order --> Cosmos
+                Analytics --> Search
+                Cache --> SQL
+{mermaid}
+
+h2. 6. 6. Monitoring and Observability
+{mermaid}
+graph LR
+                subgraph "Application Metrics"
+                    Shell[App Shell]
+                    Pilets[Pilets]
+                    API[APIs]
+                end
+                
+                subgraph "Collection"
+                    SDK[Application Insights SDK]
+                    Agent[Monitoring Agent]
+                    Traces[Distributed Tracing]
+                end
+                
+                subgraph "Processing"
+                    Stream[Stream Analytics]
+                    Functions[Azure Functions]
+                    ML[Machine Learning]
+                end
+                
+                subgraph "Storage"
+                    Insights[Application Insights]
+                    Logs[Log Analytics]
+                    Metrics[Metrics Store]
+                end
+                
+                subgraph "Visualization"
+                    Dashboard[Azure Dashboard]
+                    Workbooks[Workbooks]
+                    Alerts[Alert Rules]
+                    Teams[Teams Integration]
+                end
+                
+                Shell --> SDK
+                Pilets --> SDK
+                API --> Agent
+                
+                SDK --> Traces
+                Agent --> Traces
+                Traces --> Stream
+                
+                Stream --> Functions
+                Stream --> ML
+                Functions --> Insights
+                ML --> Insights
+                
+                Insights --> Logs
+                Insights --> Metrics
+                
+                Logs --> Dashboard
+                Metrics --> Dashboard
+                Dashboard --> Workbooks
+                Dashboard --> Alerts
+                Alerts --> Teams
+{mermaid}
+
+h2. 7. 7. Disaster Recovery Strategy
+{mermaid}
+graph TB
+                subgraph "Primary Region - East US"
+                    PFD[Front Door Primary]
+                    PShell[App Shell Primary]
+                    PFeed[Feed Service Primary]
+                    PStorage[Storage Primary]
+                    PData[Database Primary]
+                end
+                
+                subgraph "Secondary Region - West Europe"
+                    SFD[Front Door Secondary]
+                    SShell[App Shell Secondary]
+                    SFeed[Feed Service Secondary]
+                    SStorage[Storage Secondary]
+                    SData[Database Secondary]
+                end
+                
+                subgraph "Global Services"
+                    TM[Traffic Manager]
+                    DNS[Azure DNS]
+                    Monitor[Global Monitor]
+                end
+                
+                subgraph "Backup & Recovery"
+                    Backup[Automated Backups]
+                    GeoRep[Geo-Replication]
+                    Snapshot[Point-in-Time Snapshots]
+                end
+                
+                DNS --> TM
+                TM -->|Active| PFD
+                TM -.->|Standby| SFD
+                
+                PFD --> PShell
+                PShell --> PFeed
+                PFeed --> PStorage
+                PStorage --> PData
+                
+                SFD --> SShell
+                SShell --> SFeed
+                SFeed --> SStorage
+                SStorage --> SData
+                
+                PData <-->|Sync| SData
+                PStorage <-->|Sync| SStorage
+                
+                Monitor --> TM
+                Monitor -->|Failover| SFD
+                
+                PData --> Backup
+                SData --> Backup
+                Backup --> Snapshot
+                PStorage --> GeoRep
+                SStorage --> GeoRep
+{mermaid}

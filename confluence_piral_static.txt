@@ -1,0 +1,24 @@
+h1. Piral Plugin Architecture (Static)
+
+{toc}
+
+h2. 1. 1. High-Level System Architecture
+!diagram_01.png!
+
+h2. 2. 2. Pilet Lifecycle and Loading Strategy
+!diagram_02.png!
+
+h2. 3. 3. Deployment Pipeline Architecture
+!diagram_03.png!
+
+h2. 4. 4. Security Architecture
+!diagram_04.png!
+
+h2. 5. 5. Data Flow and Communication Patterns
+!diagram_05.png!
+
+h2. 6. 6. Monitoring and Observability
+!diagram_06.png!
+
+h2. 7. 7. Disaster Recovery Strategy
+!diagram_07.png!
