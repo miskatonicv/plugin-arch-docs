@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "version": 1,
+    "type": "gliffy"
+  },
+  "content": {
+    "objects": [
+      {
+        "id": 1,
+        "type": "shape",
+        "text": "App Shell",
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": 2,
+        "type": "shape",
+        "text": "Feed Service",
+        "x": 300,
+        "y": 100
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "text": "Pilets",
+        "x": 500,
+        "y": 100
+      },
+      {
+        "id": 4,
+        "type": "line",
+        "start": 1,
+        "end": 2
+      },
+      {
+        "id": 5,
+        "type": "line",
+        "start": 2,
+        "end": 3
+      }
+    ]
+  }
+}
