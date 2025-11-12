@@ -1,0 +1,372 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="12000">
+<g transform="translate(0,0)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">1. High-Level System Architecture</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph TB
+                subgraph "Client Layer"
+                    Browser[Web Browser]
+                    Mobile[Mobile App]
+                    Desktop[Desktop PWA]
+                end
+                
+                subgraph "Azure Front Door"
+                    FD[Front Door
+Global Load Balancer]
+                    WAF[Web Application
+Firewall]
+                    Cache[Edge Cache]
+                end
+                
+                subgraph "Application Layer"
+                    Shell[Piral App Shell
+Static Web App]
+                    Feed[Feed Service
+Functions]
+                    Assets[Pilet Assets
+Blob Storage]
+                end
+                
+                subgraph "Services Layer"
+                    Auth[Authentication
+Azure AD B2C]
+                    API[API Management]
+                    Data[Data Services]
+                end
+                
+                Browser --&gt; FD
+                Mobile --&gt; FD
+                Desktop --&gt; FD
+                
+                FD --&gt; WAF
+                WAF --&gt; Cache
+                Cache --&gt; Shell
+                
+                Shell --&gt; Feed
+                Shell --&gt; Assets
+                Shell --&gt; Auth
+                Shell --&gt; API
+                
+                Feed --&gt; Assets
+                API --&gt; Data</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">This diagram shows the complete system architecture with Azure Front Door as the global entry point, 
+            providing security through WAF and performance through edge caching. The Piral shell and pilets are 
+            served as static assets, while dynamic functionality is provided through Azure Functions and API Management.</text></g>
+<g transform="translate(0,1050)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">2. Pilet Lifecycle and Loading Strategy</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">sequenceDiagram
+                participant User
+                participant Browser
+                participant Shell
+                participant SW as Service Worker
+                participant Feed as Feed Service
+                participant CDN
+                participant Storage as Blob Storage
+                
+                User-&gt;&gt;Browser: Navigate to App
+                Browser-&gt;&gt;Shell: Load App Shell
+                Shell-&gt;&gt;Shell: Initialize Core
+                
+                Shell-&gt;&gt;SW: Check Cache
+                SW--&gt;&gt;Shell: Cached Pilet List
+                
+                Shell-&gt;&gt;Feed: Request Pilet Registry
+                Feed-&gt;&gt;Feed: Check User Permissions
+                Feed-&gt;&gt;Feed: Filter Applicable Pilets
+                Feed--&gt;&gt;Shell: Return Pilet Metadata
+                
+                Shell-&gt;&gt;Shell: Determine Load Priority
+                
+                loop For Each Priority Group
+                    Shell-&gt;&gt;CDN: Request Pilet Bundle
+                    CDN-&gt;&gt;Storage: Fetch if not cached
+                    Storage--&gt;&gt;CDN: Pilet Bundle
+                    CDN--&gt;&gt;Shell: Deliver Pilet
+                    Shell-&gt;&gt;Shell: Initialize Pilet
+                    Shell-&gt;&gt;Browser: Update UI
+                end
+                
+                Shell-&gt;&gt;SW: Cache Pilets
+                SW-&gt;&gt;SW: Store for Offline</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">This sequence diagram illustrates the complete pilet loading process, from initial page load through 
+            progressive enhancement. Note the use of Service Worker for caching and the prioritized loading strategy 
+            that ensures critical pilets load first.</text></g>
+<g transform="translate(0,2100)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">3. Deployment Pipeline Architecture</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph LR
+                subgraph "Development"
+                    Dev[Developer]
+                    IDE[VS Code]
+                    Local[Local Piral CLI]
+                end
+                
+                subgraph "Source Control"
+                    Git[Git Repository]
+                    PR[Pull Request]
+                    Review[Code Review]
+                end
+                
+                subgraph "CI/CD Pipeline"
+                    Build[Build Stage]
+                    Test[Test Stage]
+                    Security[Security Scan]
+                    Package[Package Stage]
+                end
+                
+                subgraph "Deployment Stages"
+                    DevEnv[Development
+Environment]
+                    Staging[Staging
+Environment]
+                    Canary[Canary
+Deployment]
+                    Prod[Production]
+                end
+                
+                subgraph "Azure Infrastructure"
+                    Registry[Container Registry]
+                    Storage[Blob Storage]
+                    FeedSvc[Feed Service]
+                    Monitor[Application Insights]
+                end
+                
+                Dev --&gt; IDE
+                IDE --&gt; Local
+                Local --&gt; Git
+                Git --&gt; PR
+                PR --&gt; Review
+                Review --&gt; Build
+                
+                Build --&gt; Test
+                Test --&gt; Security
+                Security --&gt; Package
+                
+                Package --&gt; Registry
+                Registry --&gt; DevEnv
+                DevEnv --&gt;|Auto| Staging
+                Staging --&gt;|Manual| Canary
+                Canary --&gt;|Progressive| Prod
+                
+                Package --&gt; Storage
+                Storage --&gt; FeedSvc
+                
+                DevEnv --&gt; Monitor
+                Staging --&gt; Monitor
+                Canary --&gt; Monitor
+                Prod --&gt; Monitor</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">The deployment pipeline shows how pilets move from development to production with multiple quality gates 
+            and progressive rollout strategies. Each stage has monitoring to ensure issues are caught early.</text></g>
+<g transform="translate(0,3150)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">4. Security Architecture</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph TB
+                subgraph "Security Perimeter"
+                    Internet[Internet Traffic]
+                    DDos[DDoS Protection]
+                    FD[Azure Front Door]
+                    WAF[Web Application Firewall]
+                end
+                
+                subgraph "Authentication Layer"
+                    B2C[Azure AD B2C]
+                    MFA[Multi-Factor Auth]
+                    SSO[Single Sign-On]
+                    Tokens[Token Service]
+                end
+                
+                subgraph "Application Security"
+                    CSP[Content Security Policy]
+                    CORS[CORS Policy]
+                    Sandbox[Pilet Sandbox]
+                    Validate[Input Validation]
+                end
+                
+                subgraph "Data Security"
+                    Encrypt[Encryption at Rest]
+                    TLS[TLS in Transit]
+                    Keys[Key Vault]
+                    RBAC[Role-Based Access]
+                end
+                
+                Internet --&gt; DDos
+                DDos --&gt; FD
+                FD --&gt; WAF
+                WAF --&gt; B2C
+                
+                B2C --&gt; MFA
+                B2C --&gt; SSO
+                SSO --&gt; Tokens
+                
+                Tokens --&gt; CSP
+                CSP --&gt; CORS
+                CORS --&gt; Sandbox
+                Sandbox --&gt; Validate
+                
+                Validate --&gt; Encrypt
+                Validate --&gt; TLS
+                Keys --&gt; Encrypt
+                Keys --&gt; TLS
+                RBAC --&gt; Encrypt</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">Security is implemented in layers, from network protection through Azure Front Door and WAF, 
+            to application-level sandboxing of pilets. Each layer provides defense in depth against different 
+            threat vectors.</text></g>
+<g transform="translate(0,4200)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">5. Data Flow and Communication Patterns</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph TB
+                subgraph "Pilet Communication"
+                    P1[Pilet 1
+Customer Mgmt]
+                    P2[Pilet 2
+Order Processing]
+                    P3[Pilet 3
+Analytics]
+                    Bus[Event Bus]
+                    State[Shared State]
+                end
+                
+                subgraph "API Gateway"
+                    Gateway[API Management]
+                    RateLimit[Rate Limiting]
+                    Transform[Transform]
+                    Route[Routing]
+                end
+                
+                subgraph "Backend Services"
+                    Customer[Customer Service]
+                    Order[Order Service]
+                    Analytics[Analytics Service]
+                    Cache[Redis Cache]
+                end
+                
+                subgraph "Data Layer"
+                    SQL[Azure SQL]
+                    Cosmos[Cosmos DB]
+                    Blob[Blob Storage]
+                    Search[Cognitive Search]
+                end
+                
+                P1 -.-&gt;|Publish Event| Bus
+                P2 -.-&gt;|Subscribe| Bus
+                P3 -.-&gt;|Subscribe| Bus
+                
+                P1 --&gt; State
+                P2 --&gt; State
+                P3 --&gt; State
+                
+                P1 --&gt; Gateway
+                P2 --&gt; Gateway
+                P3 --&gt; Gateway
+                
+                Gateway --&gt; RateLimit
+                RateLimit --&gt; Transform
+                Transform --&gt; Route
+                
+                Route --&gt; Customer
+                Route --&gt; Order
+                Route --&gt; Analytics
+                
+                Customer --&gt; Cache
+                Order --&gt; Cache
+                Analytics --&gt; Cache
+                
+                Customer --&gt; SQL
+                Order --&gt; Cosmos
+                Analytics --&gt; Search
+                Cache --&gt; SQL</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">This diagram shows how pilets communicate with each other through an event bus and shared state, 
+            while backend communication goes through the API Gateway for security and rate limiting. 
+            Data is stored in appropriate Azure services based on access patterns and requirements.</text></g>
+<g transform="translate(0,5250)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">6. Monitoring and Observability</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph LR
+                subgraph "Application Metrics"
+                    Shell[App Shell]
+                    Pilets[Pilets]
+                    API[APIs]
+                end
+                
+                subgraph "Collection"
+                    SDK[Application Insights SDK]
+                    Agent[Monitoring Agent]
+                    Traces[Distributed Tracing]
+                end
+                
+                subgraph "Processing"
+                    Stream[Stream Analytics]
+                    Functions[Azure Functions]
+                    ML[Machine Learning]
+                end
+                
+                subgraph "Storage"
+                    Insights[Application Insights]
+                    Logs[Log Analytics]
+                    Metrics[Metrics Store]
+                end
+                
+                subgraph "Visualization"
+                    Dashboard[Azure Dashboard]
+                    Workbooks[Workbooks]
+                    Alerts[Alert Rules]
+                    Teams[Teams Integration]
+                end
+                
+                Shell --&gt; SDK
+                Pilets --&gt; SDK
+                API --&gt; Agent
+                
+                SDK --&gt; Traces
+                Agent --&gt; Traces
+                Traces --&gt; Stream
+                
+                Stream --&gt; Functions
+                Stream --&gt; ML
+                Functions --&gt; Insights
+                ML --&gt; Insights
+                
+                Insights --&gt; Logs
+                Insights --&gt; Metrics
+                
+                Logs --&gt; Dashboard
+                Metrics --&gt; Dashboard
+                Dashboard --&gt; Workbooks
+                Dashboard --&gt; Alerts
+                Alerts --&gt; Teams</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">Comprehensive monitoring covers all aspects of the system, from client-side pilet performance to 
+            backend API health. Machine Learning helps identify anomalies, while alerts ensure rapid response 
+            to issues.</text></g>
+<g transform="translate(0,6300)"><rect x="0" y="0" width="2400" height="1000" fill="#ffffff" stroke="#0078d4" stroke-width="3"/><text x="60" y="70" font-size="40" font-family="Segoe UI" fill="#0078d4">7. Disaster Recovery Strategy</text><text x="60" y="130" font-size="22" font-family="Consolas" fill="#333">graph TB
+                subgraph "Primary Region - East US"
+                    PFD[Front Door Primary]
+                    PShell[App Shell Primary]
+                    PFeed[Feed Service Primary]
+                    PStorage[Storage Primary]
+                    PData[Database Primary]
+                end
+                
+                subgraph "Secondary Region - West Europe"
+                    SFD[Front Door Secondary]
+                    SShell[App Shell Secondary]
+                    SFeed[Feed Service Secondary]
+                    SStorage[Storage Secondary]
+                    SData[Database Secondary]
+                end
+                
+                subgraph "Global Services"
+                    TM[Traffic Manager]
+                    DNS[Azure DNS]
+                    Monitor[Global Monitor]
+                end
+                
+                subgraph "Backup &amp; Recovery"
+                    Backup[Automated Backups]
+                    GeoRep[Geo-Replication]
+                    Snapshot[Point-in-Time Snapshots]
+                end
+                
+                DNS --&gt; TM
+                TM --&gt;|Active| PFD
+                TM -.-&gt;|Standby| SFD
+                
+                PFD --&gt; PShell
+                PShell --&gt; PFeed
+                PFeed --&gt; PStorage
+                PStorage --&gt; PData
+                
+                SFD --&gt; SShell
+                SShell --&gt; SFeed
+                SFeed --&gt; SStorage
+                SStorage --&gt; SData
+                
+                PData &lt;--&gt;|Sync| SData
+                PStorage &lt;--&gt;|Sync| SStorage
+                
+                Monitor --&gt; TM
+                Monitor --&gt;|Failover| SFD
+                
+                PData --&gt; Backup
+                SData --&gt; Backup
+                Backup --&gt; Snapshot
+                PStorage --&gt; GeoRep
+                SStorage --&gt; GeoRep</text><text x="60" y="940" font-size="18" font-family="Segoe UI" fill="#666">Multi-region deployment ensures business continuity with automatic failover capabilities. 
+            Data is continuously replicated between regions, and Traffic Manager handles routing to healthy endpoints. 
+            Recovery Time Objective (RTO) is less than 5 minutes, with Recovery Point Objective (RPO) near zero for critical data.</text></g>
+</svg>
